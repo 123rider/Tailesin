@@ -1,3 +1,3 @@
 # Taliesin
 
-An mp4 player that don't hard require on lib and framework
+an simple  physical simulation using [This](https://gitea.replacesansserver.tail359522.ts.net/123rider/SoftwareRenderingCanvas)
