@@ -8,7 +8,7 @@ const app = @import("app.zig");
 
 const width = 1600;
 const height = 900;
-const maxDeletaTime = 0.01;
+const maxDeletaTime = 0.016;
 
 pub fn main() !void {
     var buffer: [width * height]@import("canvas").Color.Pixel = undefined;
@@ -41,6 +41,14 @@ pub fn main() !void {
     defer App.stopApp();
 
     while (!rl.windowShouldClose()) {
+        if (rl.isMouseButtonPressed(rl.MouseButton.left)) {
+            const cord = rl.getMousePosition();
+            try App.onMouseInput(
+                .{ @floatCast(cord.x), @floatCast(cord.y) },
+                app.MouseEvent.Lclicked,
+            );
+        }
+
         try App.update(@floatCast(@min(rl.getFrameTime(), maxDeletaTime)));
 
         // raylib logic to update buffer
