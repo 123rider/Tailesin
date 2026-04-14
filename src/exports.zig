@@ -8,8 +8,10 @@ const builtin = @import("builtin");
 
 // 1. Chọn Allocator nền tùy theo môi trường
 
-var da = std.heap.DebugAllocator(.{ .safety = false }).init;
-var allocator = da.allocator();
+var allocator = if (builtin.link_libc)
+    std.heap.c_allocator
+else if (builtin.target.cpu.arch.isWasm())
+    std.heap.wasm_allocator;
 
 /// EXPORT: Initialize the App and return an opaque pointer
 export fn app_init(buffer: [*]u8, width: f64, height: f64, seed: u64) ?*App {
@@ -49,9 +51,10 @@ export fn app_on_mouse_click(app: *App, x: f64, y: f64) i32 {
 export fn app_deinit(app: *App) void {
     app.stopApp();
     allocator.destroy(app);
+}
 
-    if (da.deinit() == .leak) {
-        @breakpoint(); // Nếu chạy trong debugger/browser devtools, nó sẽ dừng tại đây
-        while (true) {} // Treo máy để bạn soi memory
-    }
+/// use when the zig is safer to allocate mem (wasm)
+export fn alloc_buffer(len: usize) ?[*]u8 {
+    const buffer = allocator.alloc(u8, len) catch return null;
+    return buffer.ptr;
 }

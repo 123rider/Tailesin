@@ -94,6 +94,16 @@ pub fn ForcesSystem(world: *World, dt: f64) void {
     }
 }
 
+// pub fn collisionSystem(world: *World) void {
+//     const cords = world.cords.items;
+//     const vels = world.vels.items;
+
+//     const threshold = RADIUS * 2.0;
+//     const threshold_sq = threshold * threshold;
+
+   
+// }
+
 pub fn boundarySystem(world: *World, canvas: Lib.Canvas) void {
     const cords = world.cords.items;
     const vels = world.vels.items;
