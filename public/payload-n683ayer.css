@@ -1,0 +1,10 @@
+/* web/style.css */
+body {
+  overflow: hidden;
+  background: #000;
+}
+
+#app {
+  width: 1200px;
+  height: 600px;
+}
