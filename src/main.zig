@@ -8,18 +8,22 @@ const app = @import("app.zig");
 
 const width = 1600;
 const height = 900;
-const maxDeletaTime = 0.01;
+const maxDeletaTime = 0.016;
 
 pub fn main() !void {
     var buffer: [width * height]@import("canvas").Color.Pixel = undefined;
     var da = std.heap.DebugAllocator(.{}).init;
     const allocator = da.allocator();
 
+    var seed: u64 = undefined;
+    std.crypto.random.bytes(std.mem.asBytes(&seed));
+
     var App = app.App.initApp(.{
         .screenBuffer = @ptrCast(&buffer),
         .screenHeight = height,
         .screenWidth = width,
         .allocator = allocator,
+        .seed = seed,
     });
 
     rl.initWindow(width, height, "Zig Software Rasterizer");
@@ -41,6 +45,14 @@ pub fn main() !void {
     defer App.stopApp();
 
     while (!rl.windowShouldClose()) {
+        if (rl.isMouseButtonPressed(rl.MouseButton.left)) {
+            const cord = rl.getMousePosition();
+            try App.onMouseInput(
+                .{ @floatCast(cord.x), @floatCast(cord.y) },
+                app.MouseEvent.Lclicked,
+            );
+        }
+
         try App.update(@floatCast(@min(rl.getFrameTime(), maxDeletaTime)));
 
         // raylib logic to update buffer
