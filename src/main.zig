@@ -15,11 +15,15 @@ pub fn main() !void {
     var da = std.heap.DebugAllocator(.{}).init;
     const allocator = da.allocator();
 
+    var seed: u64 = undefined;
+    std.crypto.random.bytes(std.mem.asBytes(&seed));
+
     var App = app.App.initApp(.{
         .screenBuffer = @ptrCast(&buffer),
         .screenHeight = height,
         .screenWidth = width,
         .allocator = allocator,
+        .seed = seed,
     });
 
     rl.initWindow(width, height, "Zig Software Rasterizer");

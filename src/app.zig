@@ -15,12 +15,15 @@ const AppConfig = struct {
     screenWidth: f64,
     screenHeight: f64,
     allocator: std.mem.Allocator,
+    seed: u64,
 };
 
 pub const App = struct {
     canvas: Lib.Canvas,
     allocator: std.mem.Allocator,
     ecm: World.World,
+    // used for random generation
+    seed: u64,
 
     pub fn initApp(config: AppConfig) App {
         const buffer: []Lib.Color.Pixel = @as([*]Lib.Color.Pixel, @ptrCast(@alignCast(config.screenBuffer)))[0..@intFromFloat(config.screenHeight * config.screenWidth)];
@@ -33,14 +36,11 @@ pub const App = struct {
                 .buffer = buffer,
             },
             .ecm = World.World.init(config.allocator),
+            .seed = config.seed
         };
     }
     pub fn startApp(self: *App) !void {
-        var prng: std.Random.DefaultPrng = .init(blk: {
-            var seed: u64 = undefined;
-            try std.posix.getrandom(std.mem.asBytes(&seed));
-            break :blk seed;
-        });
+        var prng: std.Random.DefaultPrng = .init(self.seed);
         const rand = prng.random();
 
         for (0..10) |i| {
@@ -70,9 +70,10 @@ pub const App = struct {
     pub fn onMouseInput(self: *App, cord: @Vector(2, f64), evnet: MouseEvent) !void {
         switch (evnet) {
             MouseEvent.Lclicked => {
+                const x_dir: f64 = if (cord[0] <= self.canvas.width / 2) -1 else 1;
                 try self.ecm.spawn(.{
                     .cord = cord,
-                    .vel = share.Vector2{ 0, 0 },
+                    .vel = share.Vector2{ 2 * share.PixelPerMeter * x_dir, 0 },
                     .mass = 10,
                 });
             },
