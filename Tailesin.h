@@ -27,6 +27,7 @@ extern "C"
     int32_t app_update(App *app, double dt);
     int32_t app_on_mouse_click(App *app, double x, double y);
     void app_deinit(App *app);
+    uint8_t *alloc_buffer(size_t len);
 
 #ifdef __cplusplus
 }

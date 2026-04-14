@@ -1,0 +1,10 @@
+body {
+    overflow: hidden;
+    background: black;
+}
+
+#app {
+    width: 1200px;
+    height: 600;
+
+}

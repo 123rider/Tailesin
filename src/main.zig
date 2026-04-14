@@ -3,17 +3,27 @@
 /// this example using raylib to render it out
 const std = @import("std");
 const rl = @import("raylib");
-
+const builtin = @import("builtin");
 const app = @import("app.zig");
 
-const width = 1600;
-const height = 900;
+const width = 1200;
+const height = 600;
 const maxDeletaTime = 0.016;
 
 pub fn main() !void {
     var buffer: [width * height]@import("canvas").Color.Pixel = undefined;
-    var da = std.heap.DebugAllocator(.{}).init;
-    const allocator = da.allocator();
+    var da = if (builtin.mode == .Debug)
+        std.heap.DebugAllocator(.{}).init
+    else {};
+
+    if (builtin.mode == .Debug) {
+        defer _ = da.deinit();
+    }
+
+    const allocator = if (builtin.mode == .Debug)
+        da.allocator()
+    else
+        std.heap.smp_allocator;
 
     var seed: u64 = undefined;
     std.crypto.random.bytes(std.mem.asBytes(&seed));

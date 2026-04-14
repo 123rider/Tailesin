@@ -146,11 +146,12 @@ pub fn build(b: *std.Build) void {
                 .os_tag = .freestanding,
                 .cpu_arch = .wasm32,
             }),
-            .optimize = optimize,
+            .optimize = .ReleaseSmall,
             .imports = &.{.{ .name = "canvas", .module = shape_mod }},
         }),
     });
     wasm_exe.entry = .disabled;
+    wasm_exe.rdynamic = true;
 
     b.installArtifact(wasm_exe);
 }
